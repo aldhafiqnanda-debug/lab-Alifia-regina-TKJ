@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab alifiaregina TKJ - Modul Simulasi Kabel LAN Straight &amp; Crossover</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #070b14;
+      color: #e2e8f0;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Tekstur Strip Kabel UTP */
+    .wire-wo {
+      background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4px, #f97316 4px, #f97316 8px);
+      border: 1px solid #fb923c;
+    }
+    .wire-o {
+      background-color: #ea580c;
+      border: 1px solid #fdba74;
+    }
+    .wire-wg {
+      background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4px, #22c55e 4px, #22c55e 8px);
+      border: 1px solid #4ade80;
+    }
+    .wire-b {
+      background-color: #2563eb;
+      border: 1px solid #93c5fd;
+    }
+    .wire-wb {
+      background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4px, #3b82f6 4px, #3b82f6 8px);
+      border: 1px solid #60a5fa;
+    }
+    .wire-g {
+      background-color: #16a34a;
+      border: 1px solid #86efac;
+    }
+    .wire-wbr {
+      background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4px, #92400e 4px, #92400e 8px);
+      border: 1px solid #b45309;
+    }
+    .wire-br {
+      background-color: #78350f;
+      border: 1px solid #d97706;
+    }
+
+    /* Efek LED menyala pada LAN Tester */
+    .led-off {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+    .led-on-green {
+      background-color: #22c55e;
+      border: 1px solid #86efac;
+      box-shadow: 0 0 12px #22c55e, 0 0 4px #bbf7d0 inset;
+    }
+    .led-on-amber {
+      background-color: #f59e0b;
+      border: 1px solid #fde68a;
+      box-shadow: 0 0 12px #f59e0b, 0 0 4px #fef3c7 inset;
+    }
+    .led-on-red {
+      background-color: #ef4444;
+      border: 1px solid #fca5a5;
+      box-shadow: 0 0 12px #ef4444, 0 0 4px #fee2e2 inset;
+    }
+
+    /* Animasi denyut perangkat aktif */
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.35)); }
+      50% { filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.85)); }
+    }
+    .device-glow {
+      animation: pulseGlow 1.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- ==================== 1. HEADER UTAMA ==================== -->
+  <header class="bg-slate-900/95 border-b border-slate-800 backdrop-blur-md sticky top-0 z-30 px-4 py-3 shadow-xl">
+    <div class="max-w-[1640px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- Ikon Konektor RJ-45 -->
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-400/30">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h10v6a2 2 0 01-2 2H9a2 2 0 01-2-2V7z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4h6v3M10 15v5M14 15v5M10 10v2M14 10v2" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">
+              Lab alifiaregina TKJ - Modul Simulasi Kabel LAN Straight &amp; Crossover
+            </h1>
+            <span class="text-[11px] font-mono-code font-semibold px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              TIA/EIA-568A &amp; 568B
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Praktikum Pengkabelan UTP Cat5e/Cat6, Pemetaan Pin TX/RX, &amp; Pengujian LAN Tester Master-Remote
+          </p>
+        </div>
+      </div>
+
+      <!-- Indikator Cepat Status Link di Header -->
+      <div class="flex items-center gap-2">
+        <div id="headerLinkStatus" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono-code text-emerald-300">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>LINK UP • 100BASE-TX FULL DUPLEX</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN 3-PANEL LAYOUT ==================== -->
+  <main class="flex-1 max-w-[1640px] w-full mx-auto p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+    <!-- ==================== 2. PANEL KIRI: MENU KONTROL ==================== -->
+    <section class="lg:col-span-3 flex flex-col bg-slate-900/75 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+          <h2 class="text-xs sm:text-sm font-semibold text-white">Menu Kontrol &amp; Konfigurasi</h2>
+        </div>
+        <button onclick="resetDefaultConfig()" class="text-[11px] text-slate-400 hover:text-cyan-300 transition cursor-pointer">
+          Reset
+        </button>
+      </div>
+
+      <div class="p-4 space-y-4 flex-1 overflow-y-auto">
+        <!-- 1. Pilihan Jenis Kabel -->
+        <div class="space-y-1.5">
+          <label for="cableModeSelect" class="block text-xs font-semibold text-slate-300">
+            1. Jenis Kabel UTP
+          </label>
+          <select id="cableModeSelect" onchange="handleCableModeChange()" class="w-full bg-slate-950 border border-slate-700 hover:border-cyan-500/60 text-slate-100 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-cyan-400 cursor-pointer transition">
+            <option value="straight">Straight-Through (Lurus)</option>
+            <option value="crossover">Crossover (Silang)</option>
+            <option value="custom">Custom / Mode Salah Susun (Troubleshooting)</option>
+          </select>
+          <p id="cableModeHint" class="text-[11px] text-slate-400 leading-relaxed">
+            Kedua ujung konektor menggunakan standar urutan warna yang sama (T568B – T568B).
+          </p>
+        </div>
+
+        <!-- 2. Pilihan Standar Warna Ujung A & Ujung B -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-cyan-300">2. Standar Warna Konektor</span>
+            <span id="syncTag" class="text-[10px] font-mono-code px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">AUTO-SYNC</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
+            <!-- Ujung A -->
+            <div>
+              <label for="endASelect" class="block text-[11px] font-medium text-slate-400 mb-1">
+                Konektor Ujung A (Kiri)
+              </label>
+              <select id="endASelect" onchange="handleManualStandardChange()" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:border-cyan-400 cursor-pointer">
+                <option value="T568B" selected>Standar TIA/EIA-568B</option>
+                <option value="T568A">Standar TIA/EIA-568A</option>
+              </select>
+            </div>
+
+            <!-- Ujung B -->
+            <div>
+              <label for="endBSelect" class="block text-[11px] font-medium text-slate-400 mb-1">
+                Konektor Ujung B (Kanan)
+              </label>
+              <select id="endBSelect" onchange="handleManualStandardChange()" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:border-cyan-400 cursor-pointer">
+                <option value="T568B" selected>Standar TIA/EIA-568B</option>
+                <option value="T568A">Standar TIA/EIA-568A</option>
+                <option value="FAULT_SWAP">Salah Crimping (Pin 3 &amp; 4 Tertukar)</option>
+                <option value="FAULT_OPEN">Kabel Putus (Pin 2 Open / Lepas)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Editor Pin Manual (Muncul saat mode Custom dipilih) -->
+          <div id="customPinEditor" class="hidden pt-2 border-t border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold text-amber-300">Simulasi Kesalahan Crimping:</span>
+              <button onclick="randomizeFaultPin()" class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 cursor-pointer">
+                Acak Error Pin
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              Pilih preset kesalahan pada <strong>Ujung B</strong> di atas atau klik tombol Acak Error untuk melatih analisis kerusakan kabel.
+            </p>
+          </div>
+        </div>
+
+        <!-- 3. Pilihan Perangkat yang Dihubungkan -->
+        <div class="space-y-1.5">
+          <label for="devicePairSelect" class="block text-xs font-semibold text-slate-300">
+            3. Perangkat yang Dihubungkan
+          </label>
+          <select id="devicePairSelect" onchange="evaluateAll()" class="w-full bg-slate-950 border border-slate-700 hover:border-cyan-500/60 text-slate-100 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-cyan-400 cursor-pointer transition">
+            <option value="pc-switch">PC Client ↔ Switch (Berbeda Jenis)</option>
+            <option value="pc-pc">PC Client ↔ PC Client (Sejenis)</option>
+            <option value="switch-switch">Switch ↔ Switch (Sejenis)</option>
+            <option value="pc-router">PC Client ↔ Router (Sejenis / MDI-MDI)</option>
+            <option value="router-switch">Router ↔ Switch (Berbeda Jenis)</option>
+          </select>
+          <div class="flex items-center justify-between text-[11px] bg-slate-950/70 px-3 py-2 rounded-lg border border-slate-800">
+            <span class="text-slate-400">Kebutuhan Standar:</span>
+            <span id="requiredCableBadge" class="font-mono-code font-semibold text-cyan-300">STRAIGHT-THROUGH</span>
+          </div>
+        </div>
+
+        <!-- 4. Tombol Aksi Utama -->
+        <div class="pt-1 space-y-2.5">
+          <button id="btnRunTester" onclick="startLanTesterSequence()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Uji Koneksi &amp; LAN Tester</span>
+          </button>
+
+          <button id="btnTransmitData" onclick="triggerDataTransmission()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Kirim Paket Data (TX/RX)</span>
+          </button>
+        </div>
+
+        <!-- Legenda Warna Sinyal -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3 space-y-1.5 text-[11px]">
+          <div class="font-semibold text-slate-300 mb-1">Legenda Jalur Sinyal &amp; Pin:</div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-cyan-400 inline-block shadow shadow-cyan-400/50"></span>
+            <span class="text-slate-300">TX+ / TX- (Pin 1 &amp; 2 Transmit Data)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block shadow shadow-emerald-400/50"></span>
+            <span class="text-slate-300">RX+ / RX- (Pin 3 &amp; 6 Receive Data)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 inline-block shadow shadow-rose-500/50"></span>
+            <span class="text-slate-300">Collision / Packet Drop (TX bertemu TX)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. PANEL TENGAH: VISUALISASI INTERAKTIF RJ-45 & TX/RX ==================== -->
+    <section class="lg:col-span-6 flex flex-col bg-slate-900/75 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <!-- Header Panel Tengah -->
+      <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          <h2 class="text-xs sm:text-sm font-semibold text-white">Visualisasi Konektor RJ-45 &amp; Aliran Transmisi TX/RX</h2>
+        </div>
+        <span id="topologyBannerBadge" class="text-[11px] font-mono-code px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+          Mode: Straight-Through
+        </span>
+      </div>
+
+      <!-- Area Kanvas Utama -->
+      <div class="flex-1 p-3 sm:p-4 flex flex-col justify-between gap-3 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:18px_18px]">
+
+        <!-- Baris Atas: Perangkat A <---> Jalur Transmisi Paket <---> Perangkat B -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3 shadow-inner">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1 px-1">
+            <span class="font-semibold text-cyan-300">Simulasi Lapisan Fisik (Layer 1 OSI)</span>
+            <span id="transmissionStatusText" class="font-mono-code text-emerald-400">Siap mengirim frame Ethernet...</span>
+          </div>
+
+          <svg id="deviceAnimSvg" viewBox="0 0 680 125" class="w-full h-auto select-none overflow-visible">
+            <defs>
+              <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <!-- Jalur Transmisi Atas (A ke B) -->
+            <line x1="125" y1="44" x2="555" y2="44" stroke="#1e293b" stroke-width="5" stroke-linecap="round" />
+            <line id="txLineTop" x1="125" y1="44" x2="555" y2="44" stroke="#0284c7" stroke-width="2" stroke-dasharray="6 6" />
+            <text x="340" y="33" text-anchor="middle" fill="#38bdf8" font-size="10" font-family="JetBrains Mono" font-weight="600">
+              JALUR DATA A → B (Pin 1,2 TX ke Pin 3,6 RX)
+            </text>
+
+            <!-- Jalur Transmisi Bawah (B ke A) -->
+            <line x1="125" y1="84" x2="555" y2="84" stroke="#1e293b" stroke-width="5" stroke-linecap="round" />
+            <line id="txLineBottom" x1="125" y1="84" x2="555" y2="84" stroke="#059669" stroke-width="2" stroke-dasharray="6 6" />
+            <text x="340" y="103" text-anchor="middle" fill="#34d399" font-size="10" font-family="JetBrains Mono" font-weight="600">
+              JALUR DATA B → A (Balasan RX/TX Full-Duplex)
+            </text>
+
+            <!-- PERANGKAT A (KIRI) -->
+            <g id="devNodeA" transform="translate(68, 64)" class="device-glow">
+              <rect x="-56" y="-44" width="112" height="88" rx="14" fill="#0f172a" stroke="#06b6d4" stroke-width="2" />
+              <g id="devIconA"></g>
+              <text id="devLabelA" y="24" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="700">PC Client A</text>
+              <text id="devPortA" y="37" text-anchor="middle" fill="#38bdf8" font-size="9" font-family="JetBrains Mono">NIC (MDI)</text>
+            </g>
+
+            <!-- PERANGKAT B (KANAN) -->
+            <g id="devNodeB" transform="translate(612, 64)" class="device-glow">
+              <rect x="-56" y="-44" width="112" height="88" rx="14" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+              <g id="devIconB"></g>
+              <text id="devLabelB" y="24" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="700">Switch L2</text>
+              <text id="devPortB" y="37" text-anchor="middle" fill="#34d399" font-size="9" font-family="JetBrains Mono">Port (MDI-X)</text>
+            </g>
+
+            <!-- Paket Cahaya A -> B -->
+            <g id="packetAtoB" class="hidden" filter="url(#neonGlow)">
+              <rect x="-22" y="-10" width="44" height="20" rx="6" fill="#0ea5e9" stroke="#ffffff" stroke-width="1.2" />
+              <text y="3.5" text-anchor="middle" fill="#ffffff" font-size="8.5" font-weight="700" font-family="JetBrains Mono">TX DATA</text>
+            </g>
+
+            <!-- Paket Cahaya B -> A -->
+            <g id="packetBtoA" class="hidden" filter="url(#neonGlow)">
+              <rect x="-22" y="-10" width="44" height="20" rx="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2" />
+              <text y="3.5" text-anchor="middle" fill="#ffffff" font-size="8.5" font-weight="700" font-family="JetBrains Mono">RX ACK</text>
+            </g>
+
+            <!-- Efek Collision / Tabrakan Sinyal di Tengah -->
+            <g id="collisionBurst" class="hidden" transform="translate(340, 64)">
+              <circle r="26" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" stroke-width="2" />
+              <path d="M-10 -10 L10 10 M10 -10 L-10 10" stroke="#fca5a5" stroke-width="3" stroke-linecap="round" />
+              <rect x="-58" y="-42" width="116" height="19" rx="6" fill="#dc2626" />
+              <text y="-29.5" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="700" font-family="JetBrains Mono">COLLISION / DROP!</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Baris Bawah: Konektor RJ-45 Transparan Ujung A + SVG Pemetaan Kabel + Konektor RJ-45 Ujung B -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex-1 flex flex-col justify-center">
+          <div class="grid grid-cols-12 items-center gap-1 sm:gap-2">
+
+            <!-- KONEKTOR RJ-45 UJUNG A (KIRI) -->
+            <div class="col-span-5 flex flex-col">
+              <div class="text-center mb-1.5">
+                <span class="text-[11px] font-bold text-cyan-300 uppercase tracking-wider">Konektor RJ-45 (Ujung A)</span>
+                <div id="rj45SubA" class="text-[10px] font-mono-code text-slate-400">Standar T568B</div>
+              </div>
+
+              <!-- Casing Plastik Transparan RJ-45 -->
+              <div class="relative bg-gradient-to-r from-slate-900/90 via-cyan-950/20 to-slate-800/70 border-2 border-cyan-500/40 rounded-xl p-2 shadow-inner">
+                <!-- Klip Pengunci RJ-45 Visual -->
+                <div class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-cyan-500/40 rounded-l"></div>
+                <div id="pinRowsA" class="space-y-1.5">
+                  <!-- Diisi Dinamis via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- DIAGRAM SVG PEMETAAN JALUR PIN 1-8 DI TENGAH -->
+            <div class="col-span-2 flex flex-col items-center justify-center h-full">
+              <div class="text-[10px] font-mono-code text-slate-500 mb-1 text-center">Mapping</div>
+              <svg id="wiringSvg" viewBox="0 0 120 310" class="w-full h-[275px] sm:h-[295px] overflow-visible">
+                <!-- Garis & Titik Animasi Diisi Dinamis via JS -->
+              </svg>
+            </div>
+
+            <!-- KONEKTOR RJ-45 UJUNG B (KANAN) -->
+            <div class="col-span-5 flex flex-col">
+              <div class="text-center mb-1.5">
+                <span class="text-[11px] font-bold text-emerald-300 uppercase tracking-wider">Konektor RJ-45 (Ujung B)</span>
+                <div id="rj45SubB" class="text-[10px] font-mono-code text-slate-400">Standar T568B</div>
+              </div>
+
+              <!-- Casing Plastik Transparan RJ-45 -->
+              <div class="relative bg-gradient-to-l from-slate-900/90 via-emerald-950/20 to-slate-800/70 border-2 border-emerald-500/40 rounded-xl p-2 shadow-inner">
+                <!-- Klip Pengunci RJ-45 Visual -->
+                <div class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-emerald-500/40 rounded-r"></div>
+                <div id="pinRowsB" class="space-y-1.5">
+                  <!-- Diisi Dinamis via JS -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 4. PANEL KANAN: SIMULATOR LAN TESTER & STATUS KELAYAKAN ==================== -->
+    <section class="lg:col-span-3 flex flex-col bg-slate-900/75 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+          </svg>
+          <h2 class="text-xs sm:text-sm font-semibold text-white">Simulator LAN Tester &amp; Kelayakan</h2>
+        </div>
+        <span id="testerRunningBadge" class="text-[10px] font-mono-code px-2 py-0.5 rounded bg-slate-800 text-slate-400">STANDBY</span>
+      </div>
+
+      <div class="p-4 flex-1 overflow-y-auto space-y-4">
+
+        <!-- 1. Alat Fisik LAN Tester (Unit Master & Unit Remote) -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 shadow-inner space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-300">Alat Fisik Network Cable Tester</span>
+            <button onclick="startLanTesterSequence()" class="text-[11px] font-mono-code px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition cursor-pointer">
+              ▶ Tes LED
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <!-- UNIT MASTER (MAIN TESTER) -->
+            <div class="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-xl p-2.5 flex flex-col items-center shadow-md">
+              <div class="w-full text-center pb-1.5 mb-2 border-b border-slate-700">
+                <div class="text-[10px] font-bold tracking-wider text-cyan-300">MASTER UNIT</div>
+                <div class="text-[9px] font-mono-code text-slate-400">(Ujung A)</div>
+              </div>
+              <div id="masterLeds" class="w-full space-y-1.5">
+                <!-- LED 1 - 8 Diisi via JS -->
+              </div>
+              <div class="mt-2.5 pt-1.5 border-t border-slate-700/80 w-full flex items-center justify-between text-[9px] font-mono-code text-slate-400">
+                <span>PWR</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shadow shadow-emerald-400"></span>
+              </div>
+            </div>
+
+            <!-- UNIT REMOTE (TERMINATOR) -->
+            <div class="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-xl p-2.5 flex flex-col items-center shadow-md">
+              <div class="w-full text-center pb-1.5 mb-2 border-b border-slate-700">
+                <div class="text-[10px] font-bold tracking-wider text-emerald-300">REMOTE UNIT</div>
+                <div class="text-[9px] font-mono-code text-slate-400">(Ujung B)</div>
+              </div>
+              <div id="remoteLeds" class="w-full space-y-1.5">
+                <!-- LED 1 - 8 Diisi via JS -->
+              </div>
+              <div class="mt-2.5 pt-1.5 border-t border-slate-700/80 w-full flex items-center justify-between text-[9px] font-mono-code text-slate-400">
+                <span>SEQ</span>
+                <span id="remoteSeqHint" class="text-cyan-300">1..8</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Log Urutan Nyala LED -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-2 text-[11px] font-mono-code flex items-center justify-between">
+            <span class="text-slate-400">Urutan Nyala Remote:</span>
+            <span id="ledSequenceDisplay" class="text-cyan-300 font-semibold">1-2-3-4-5-6-7-8</span>
+          </div>
+        </div>
+
+        <!-- 2. Indikator Status Kelayakan Koneksi (PASS / FAIL) -->
+        <div id="feasibilityCard" class="rounded-2xl p-3.5 border transition-all bg-emerald-950/30 border-emerald-500/40 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-300">Status Kelayakan</span>
+            <span id="feasibilityBadge" class="px-2.5 py-1 rounded-full text-xs font-mono-code font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              PASS • LINK UP
+            </span>
+          </div>
+
+          <h3 id="feasibilityTitle" class="text-sm font-bold text-emerald-300">
+            Kabel &amp; Topologi Perangkat Cocok!
+          </h3>
+
+          <p id="feasibilityDesc" class="text-xs text-slate-300 leading-relaxed">
+            Susunan pin Straight-Through (T568B ke T568B) sesuai untuk menghubungkan perangkat berbeda jenis (PC Client ke Switch). Pin TX pada PC terhubung langsung ke pin RX pada Switch.
+          </p>
+
+          <!-- Checklist Verifikasi Teknis -->
+          <div class="pt-2 border-t border-slate-800/80 space-y-1.5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">1. Kontinuitas 8 Pin UTP:</span>
+              <span id="checkContinuity" class="font-mono-code font-semibold text-emerald-400">✔ 8/8 Terhubung</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">2. Tipe Kabel Terdeteksi:</span>
+              <span id="checkDetectedType" class="font-mono-code font-semibold text-cyan-300">Straight-Through</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">3. Kecocokan Port (TX↔RX):</span>
+              <span id="checkPortMatch" class="font-mono-code font-semibold text-emerald-400">✔ Sesuai</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Ringkasan Tabel Referensi Pin TX/RX -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3 space-y-2">
+          <div class="text-xs font-semibold text-slate-300">Catatan Teknis TKJ (10/100 Mbps):</div>
+          <ul class="text-[11px] text-slate-400 space-y-1 list-disc list-inside leading-relaxed">
+            <li><strong class="text-cyan-300">Pin 1 &amp; 2:</strong> Jalur Transmit (TX+ dan TX-) untuk mengirim sinyal data.</li>
+            <li><strong class="text-emerald-300">Pin 3 &amp; 6:</strong> Jalur Receive (RX+ dan RX-) untuk menerima sinyal data.</li>
+            <li><strong class="text-amber-300">Pin 4, 5, 7, 8:</strong> Cadangan pada FastEthernet (100 Mbps) dan aktif penuh pada Gigabit Ethernet (1000BASE-T).</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== JAVASCRIPT LOGIKA SIMULASI ==================== -->
+  <script>
+    // ==================== DATA STANDAR WARNA & FUNGSI PIN ====================
+    const WIRE_SPECS = {
+      WO:  { name: 'Putih-Oranye', short: 'P-Oranye', cssClass: 'wire-wo',  hex: '#fb923c' },
+      O:   { name: 'Oranye',       short: 'Oranye',   cssClass: 'wire-o',   hex: '#ea580c' },
+      WG:  { name: 'Putih-Hijau',  short: 'P-Hijau',  cssClass: 'wire-wg',  hex: '#4ade80' },
+      B:   { name: 'Biru',         short: 'Biru',     cssClass: 'wire-b',   hex: '#2563eb' },
+      WB:  { name: 'Putih-Biru',   short: 'P-Biru',   cssClass: 'wire-wb',  hex: '#60a5fa' },
+      G:   { name: 'Hijau',        short: 'Hijau',    cssClass: 'wire-g',   hex: '#16a34a' },
+      WBR: { name: 'Putih-Coklat', short: 'P-Coklat', cssClass: 'wire-wbr', hex: '#b45309' },
+      BR:  { name: 'Coklat',       short: 'Coklat',   cssClass: 'wire-br',  hex: '#78350f' },
+      OPEN:{ name: 'Putus (Open)', short: 'OPEN / X', cssClass: 'bg-rose-950 border border-dashed border-rose-500 text-rose-300', hex: '#ef4444' }
+    };
+
+    const PIN_FUNCTIONS = [
+      { pin: 1, role: 'TX+',    roleColor: 'text-cyan-300' },
+      { pin: 2, role: 'TX-',    roleColor: 'text-cyan-300' },
+      { pin: 3, role: 'RX+',    roleColor: 'text-emerald-300' },
+      { pin: 4, role: 'BI_D3+', roleColor: 'text-slate-400' },
+      { pin: 5, role: 'BI_D3-', roleColor: 'text-slate-400' },
+      { pin: 6, role: 'RX-',    roleColor: 'text-emerald-300' },
+      { pin: 7, role: 'BI_D4+', roleColor: 'text-slate-400' },
+      { pin: 8, role: 'BI_D4-', roleColor: 'text-slate-400' }
+    ];
+
+    const STANDARDS = {
+      T568B:      ['WO', 'O', 'WG', 'B', 'WB', 'G', 'WBR', 'BR'],
+      T568A:      ['WG', 'G', 'WO', 'B', 'WB', 'O', 'WBR', 'BR'],
+      FAULT_SWAP: ['WO', 'O', 'B', 'WG', 'WB', 'G', 'WBR', 'BR'], // Pin 3 & 4 tertukar
+      FAULT_OPEN: ['WO', 'OPEN', 'WG', 'B', 'WB', 'G', 'WBR', 'BR'] // Pin 2 putus
+    };
+
+    const DEVICE_CONFIGS = {
+      'pc-switch': {
+        devA: { name: 'PC Client', port: 'NIC (MDI)', type: 'pc' },
+        devB: { name: 'Switch L2', port: 'Port (MDI-X)', type: 'switch' },
+        requiredCable: 'straight',
+        requiredLabel: 'STRAIGHT-THROUGH'
+      },
+      'pc-pc': {
+        devA: { name: 'PC Client 1', port: 'NIC (MDI)', type: 'pc' },
+        devB: { name: 'PC Client 2', port: 'NIC (MDI)', type: 'pc' },
+        requiredCable: 'crossover',
+        requiredLabel: 'CROSSOVER'
+      },
+      'switch-switch': {
+        devA: { name: 'Switch 1', port: 'Port (MDI-X)', type: 'switch' },
+        devB: { name: 'Switch 2', port: 'Port (MDI-X)', type: 'switch' },
+        requiredCable: 'crossover',
+        requiredLabel: 'CROSSOVER'
+      },
+      'pc-router': {
+        devA: { name: 'PC Client', port: 'NIC (MDI)', type: 'pc' },
+        devB: { name: 'Router', port: 'Eth0 (MDI)', type: 'router' },
+        requiredCable: 'crossover',
+        requiredLabel: 'CROSSOVER'
+      },
+      'router-switch': {
+        devA: { name: 'Router', port: 'Eth0 (MDI)', type: 'router' },
+        devB: { name: 'Switch L2', port: 'Port (MDI-X)', type: 'switch' },
+        requiredCable: 'straight',
+        requiredLabel: 'STRAIGHT-THROUGH'
+      }
+    };
+
+    let testerInterval = null;
+    let isTransmitting = false;
+
+    // ==================== INISIALISASI HALAMAN ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      buildLanTesterLeds();
+      handleCableModeChange();
+    });
+
+    function resetDefaultConfig() {
+      document.getElementById('cableModeSelect').value = 'straight';
+      document.getElementById('endASelect').value = 'T568B';
+      document.getElementById('endBSelect').value = 'T568B';
+      document.getElementById('devicePairSelect').value = 'pc-switch';
+      handleCableModeChange();
+    }
+
+    // ==================== KONTROL PILIHAN KABEL & STANDAR ====================
+    function handleCableModeChange() {
+      const mode = document.getElementById('cableModeSelect').value;
+      const endASelect = document.getElementById('endASelect');
+      const endBSelect = document.getElementById('endBSelect');
+      const syncTag = document.getElementById('syncTag');
+      const customEditor = document.getElementById('customPinEditor');
+      const hint = document.getElementById('cableModeHint');
+      const bannerBadge = document.getElementById('topologyBannerBadge');
+
+      if (mode === 'straight') {
+        endASelect.value = 'T568B';
+        endBSelect.value = 'T568B';
+        syncTag.textContent = 'AUTO-SYNC';
+        syncTag.className = 'text-[10px] font-mono-code px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30';
+        customEditor.classList.add('hidden');
+        hint.textContent = 'Kedua ujung konektor menggunakan standar urutan warna yang sama (T568B – T568B atau T568A – T568A).';
+        bannerBadge.textContent = 'Mode: Straight-Through';
+      } else if (mode === 'crossover') {
+        endASelect.value = 'T568A';
+        endBSelect.value = 'T568B';
+        syncTag.textContent = 'AUTO-SYNC';
+        syncTag.className = 'text-[10px] font-mono-code px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30';
+        customEditor.classList.add('hidden');
+        hint.textContent = 'Ujung A (T568A) dan Ujung B (T568B) menyilangkan jalur TX (Pin 1,2) dengan RX (Pin 3,6).';
+        bannerBadge.textContent = 'Mode: Crossover';
+      } else {
+        // Mode Custom / Salah Susun
+        endASelect.value = 'T568B';
+        if (endBSelect.value === 'T568B' || endBSelect.value === 'T568A') {
+          endBSelect.value = 'FAULT_SWAP';
+        }
+        syncTag.textContent = 'MANUAL / FAULT';
+        syncTag.className = 'text-[10px] font-mono-code px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30';
+        customEditor.classList.remove('hidden');
+        hint.textContent = 'Mode troubleshooting aktif: Ubah standar Ujung A atau B secara bebas untuk menguji kesalahan crimping.';
+        bannerBadge.textContent = 'Mode: Custom / Troubleshooting';
+      }
+
+      evaluateAll();
+    }
+
+    function handleManualStandardChange() {
+      const endA = document.getElementById('endASelect').value;
+      const endB = document.getElementById('endBSelect').value;
+      const modeSelect = document.getElementById('cableModeSelect');
+      const customEditor = document.getElementById('customPinEditor');
+
+      if (endB.startsWith('FAULT_')) {
+        modeSelect.value = 'custom';
+        customEditor.classList.remove('hidden');
+      } else if (endA === endB) {
+        modeSelect.value = 'straight';
+        customEditor.classList.add('hidden');
+      } else {
+        modeSelect.value = 'crossover';
+        customEditor.classList.add('hidden');
+      }
+
+      evaluateAll();
+    }
+
+    function randomizeFaultPin() {
+      const faults = ['FAULT_SWAP', 'FAULT_OPEN'];
+      const current = document.getElementById('endBSelect').value;
+      const next = current === faults[0] ? faults[1] : faults[0];
+      document.getElementById('endBSelect').value = next;
+      evaluateAll();
+    }
+
+    // ==================== EVALUASI UTAMA & RENDER VISUAL ====================
+    function evaluateAll() {
+      const stdAKey = document.getElementById('endASelect').value;
+      const stdBKey = document.getElementById('endBSelect').value;
+      const pairKey = document.getElementById('devicePairSelect').value;
+
+      const wiresA = STANDARDS[stdAKey];
+      const wiresB = STANDARDS[stdBKey];
+      const devicePair = DEVICE_CONFIGS[pairKey];
+
+      // Update label subheader konektor
+      document.getElementById('rj45SubA').textContent = `Standar ${stdAKey}`;
+      document.getElementById('rj45SubB').textContent = stdBKey.startsWith('FAULT_')
+        ? (stdBKey === 'FAULT_SWAP' ? 'Salah Urutan (Pin 3↔4)' : 'Kabel Putus (Pin 2 Open)')
+        : `Standar ${stdBKey}`;
+      document.getElementById('requiredCableBadge').textContent = devicePair.requiredLabel;
+
+      // Render ikon perangkat & konektor RJ-45
+      renderDeviceNodes(devicePair);
+      renderRj45Pins('pinRowsA', wiresA, false);
+      renderRj45Pins('pinRowsB', wiresB, true);
+
+      // Analisis kelayakan kabel
+      const analysis = analyzeCableAndLink(wiresA, wiresB, devicePair);
+
+      // Gambar garis pemetaan pin 1-8 pada SVG tengah
+      renderWiringMappingSvg(wiresA, wiresB, analysis);
+
+      // Update panel status kelayakan kanan
+      updateFeasibilityUI(analysis, devicePair);
+
+      // Jalankan otomatis animasi LED singkat saat konfigurasi berubah
+      startLanTesterSequence(true);
+    }
+
+    function analyzeCableAndLink(wiresA, wiresB, devicePair) {
+      // Cek kontinuitas tiap warna dari A ke B
+      let connectedCount = 0;
+      let mapping = []; // index i (0..7) di A terhubung ke index targetIdx di B
+      let remoteOrder = []; // Urutan nyala LED pada Remote Tester (1-based)
+
+      for (let i = 0; i < 8; i++) {
+        const colorA = wiresA[i];
+        const targetIdx = wiresB.indexOf(colorA);
+        if (colorA !== 'OPEN' && targetIdx !== -1) {
+          connectedCount++;
+          mapping.push({ fromIdx: i, toIdx: targetIdx, color: colorA, ok: true });
+          remoteOrder.push(targetIdx + 1);
+        } else {
+          mapping.push({ fromIdx: i, toIdx: -1, color: colorA, ok: false });
+          remoteOrder.push(0); // 0 = LED mati / tidak menyala
+        }
+      }
+
+      const isAllConnected = (connectedCount === 8);
+
+      // Deteksi apakah kabel membentuk Straight atau Crossover secara fisik
+      const isStraightWiring = isAllConnected && mapping.every(m => m.fromIdx === m.toIdx);
+      const isCrossoverWiring = isAllConnected &&
+        mapping[0].toIdx === 2 && // Pin 1 -> Pin 3
+        mapping[1].toIdx === 5 && // Pin 2 -> Pin 6
+        mapping[2].toIdx === 0 && // Pin 3 -> Pin 1
+        mapping[5].toIdx === 1 && // Pin 6 -> Pin 2
+        mapping[3].toIdx === 3 &&
+        mapping[4].toIdx === 4 &&
+        mapping[6].toIdx === 6 &&
+        mapping[7].toIdx === 7;
+
+      let detectedCableType = 'Tidak Standar / Error';
+      if (isStraightWiring) detectedCableType = 'Straight-Through';
+      else if (isCrossoverWiring) detectedCableType = 'Crossover';
+
+      // Cek apakah tipe kabel sesuai dengan kombinasi perangkat
+      let portMatched = false;
+      if (devicePair.requiredCable === 'straight' && isStraightWiring) portMatched = true;
+      if (devicePair.requiredCable === 'crossover' && isCrossoverWiring) portMatched = true;
+
+      const linkUp = isAllConnected && portMatched;
+
+      return {
+        connectedCount,
+        isAllConnected,
+        isStraightWiring,
+        isCrossoverWiring,
+        detectedCableType,
+        portMatched,
+        linkUp,
+        mapping,
+        remoteOrder
+      };
+    }
+
+    // ==================== RENDER KONEKTOR RJ-45 TRANSPARAN ====================
+    function renderRj45Pins(containerId, wireArray, isRightSide) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      wireArray.forEach((wireCode, idx) => {
+        const spec = WIRE_SPECS[wireCode];
+        const fn = PIN_FUNCTIONS[idx];
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-1.5 bg-slate-950/90 border border-slate-800/90 rounded-lg px-2 py-1 text-[11px]';
+
+        if (!isRightSide) {
+          // Konektor A (Kiri): [Pin #] [Role] [Warna Kabel] [Kontak Kuningan]
+          row.innerHTML = `
+            <div class="flex items-center gap-1.5 min-w-[66px]">
+              <span class="font-mono-code font-bold text-slate-300 w-3.5">${fn.pin}</span>
+              <span class="font-mono-code text-[9.5px] font-semibold ${fn.roleColor}">${fn.role}</span>
+            </div>
+            <div class="flex-1 h-4 rounded ${spec.cssClass} flex items-center justify-center shadow-sm">
+              <span class="text-[9.5px] font-bold px-1 rounded bg-slate-950/75 text-white tracking-tight">${spec.short}</span>
+            </div>
+            <div class="w-2.5 h-3.5 rounded-sm bg-amber-400 border border-amber-200 shadow-sm" title="Pin Kuningan RJ-45 #${fn.pin}"></div>
+          `;
+        } else {
+          // Konektor B (Kanan): [Kontak Kuningan] [Warna Kabel] [Role] [Pin #]
+          row.innerHTML = `
+            <div class="w-2.5 h-3.5 rounded-sm bg-amber-400 border border-amber-200 shadow-sm" title="Pin Kuningan RJ-45 #${fn.pin}"></div>
+            <div class="flex-1 h-4 rounded ${spec.cssClass} flex items-center justify-center shadow-sm">
+              <span class="text-[9.5px] font-bold px-1 rounded bg-slate-950/75 text-white tracking-tight">${spec.short}</span>
+            </div>
+            <div class="flex items-center justify-end gap-1.5 min-w-[66px]">
+              <span class="font-mono-code text-[9.5px] font-semibold ${fn.roleColor}">${fn.role}</span>
+              <span class="font-mono-code font-bold text-slate-300 w-3.5 text-right">${fn.pin}</span>
+            </div>
+          `;
+        }
+
+        container.appendChild(row);
+      });
+    }
+
+    // ==================== RENDER SVG GARIS PEMETAAN KABEL DI TENGAH ====================
+    function renderWiringMappingSvg(wiresA, wiresB, analysis) {
+      const svg = document.getElementById('wiringSvg');
+      svg.innerHTML = '';
+
+      // Posisi Y untuk 8 pin sejajar dengan baris konektor
+      const yPositions = [18, 56, 94, 132, 170, 208, 246, 284];
+
+      analysis.mapping.forEach((m, idx) => {
+        const y1 = yPositions[m.fromIdx];
+        const spec = WIRE_SPECS[m.color];
+
+        if (m.ok && m.toIdx !== -1) {
+          const y2 = yPositions[m.toIdx];
+          const isCrossed = m.fromIdx !== m.toIdx;
+
+          // Buat kurva Bezier halus antar pin A dan pin B
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          const d = `M 4 ${y1} C 48 ${y1}, 72 ${y2}, 116 ${y2}`;
+          path.setAttribute('d', d);
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', spec.hex);
+          path.setAttribute('stroke-width', isCrossed ? '3' : '2.4');
+          path.setAttribute('stroke-opacity', isCrossed ? '0.95' : '0.75');
+          svg.appendChild(path);
+
+          // Titik ujung kiri & kanan
+          const c1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c1.setAttribute('cx', '4');
+          c1.setAttribute('cy', y1);
+          c1.setAttribute('r', '3.5');
+          c1.setAttribute('fill', spec.hex);
+          svg.appendChild(c1);
+
+          const c2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c2.setAttribute('cx', '116');
+          c2.setAttribute('cy', y2);
+          c2.setAttribute('r', '3.5');
+          c2.setAttribute('fill', spec.hex);
+          svg.appendChild(c2);
+        } else {
+          // Kabel putus / tidak terhubung di tengah
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', '4');
+          line.setAttribute('y1', y1);
+          line.setAttribute('x2', '54');
+          line.setAttribute('y2', y1);
+          line.setAttribute('stroke', '#ef4444');
+          line.setAttribute('stroke-width', '2.5');
+          line.setAttribute('stroke-dasharray', '4 3');
+          svg.appendChild(line);
+
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', '64');
+          text.setAttribute('y', y1 + 4);
+          text.setAttribute('fill', '#f87171');
+          text.setAttribute('font-size', '11');
+          text.setAttribute('font-weight', '700');
+          text.textContent = '✖';
+          svg.appendChild(text);
+        }
+      });
+    }
+
+    // ==================== RENDER IKON PERANGKAT A & B ====================
+    function renderDeviceNodes(devicePair) {
+      document.getElementById('devLabelA').textContent = devicePair.devA.name;
+      document.getElementById('devPortA').textContent = devicePair.devA.port;
+      document.getElementById('devLabelB').textContent = devicePair.devB.name;
+      document.getElementById('devPortB').textContent = devicePair.devB.port;
+
+      document.getElementById('devIconA').innerHTML = getDeviceSvgIcon(devicePair.devA.type, '#38bdf8');
+      document.getElementById('devIconB').innerHTML = getDeviceSvgIcon(devicePair.devB.type, '#34d399');
+    }
+
+    function getDeviceSvgIcon(type, color) {
+      if (type === 'pc') {
+        return `
+          <rect x="-18" y="-30" width="36" height="24" rx="3" fill="none" stroke="${color}" stroke-width="2" />
+          <line x1="-8" y1="1" x2="8" y2="1" stroke="${color}" stroke-width="2" stroke-linecap="round" />
+          <line x1="0" y1="-6" x2="0" y2="1" stroke="${color}" stroke-width="2" />
+        `;
+      } else if (type === 'switch') {
+        return `
+          <rect x="-22" y="-26" width="44" height="22" rx="4" fill="none" stroke="${color}" stroke-width="2" />
+          <path d="M-12 -19 L12 -19 M8 -22 L12 -19 L8 -16 M12 -11 L-12 -11 M-8 -14 L-12 -11 L-8 -8" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        `;
+      } else {
+        return `
+          <circle cx="0" cy="-16" r="16" fill="none" stroke="${color}" stroke-width="2" />
+          <path d="M-9 -25 L9 -7 M9 -25 L-9 -7" stroke="${color}" stroke-width="1.8" stroke-linecap="round" />
+        `;
+      }
+    }
+
+    // ==================== UPDATE PANEL STATUS KELAYAKAN ====================
+    function updateFeasibilityUI(analysis, devicePair) {
+      const card = document.getElementById('feasibilityCard');
+      const badge = document.getElementById('feasibilityBadge');
+      const title = document.getElementById('feasibilityTitle');
+      const desc = document.getElementById('feasibilityDesc');
+      const headerStatus = document.getElementById('headerLinkStatus');
+
+      const checkContinuity = document.getElementById('checkContinuity');
+      const checkDetectedType = document.getElementById('checkDetectedType');
+      const checkPortMatch = document.getElementById('checkPortMatch');
+
+      const txLineTop = document.getElementById('txLineTop');
+      const txLineBottom = document.getElementById('txLineBottom');
+      const txStatusText = document.getElementById('transmissionStatusText');
+
+      // Update checklist
+      checkContinuity.textContent = analysis.isAllConnected
+        ? '✔ 8/8 Terhubung'
+        : `✖ ${analysis.connectedCount}/8 Terhubung`;
+      checkContinuity.className = analysis.isAllConnected
+        ? 'font-mono-code font-semibold text-emerald-400'
+        : 'font-mono-code font-semibold text-rose-400';
+
+      checkDetectedType.textContent = analysis.detectedCableType;
+      checkDetectedType.className = (analysis.isStraightWiring || analysis.isCrossoverWiring)
+        ? 'font-mono-code font-semibold text-cyan-300'
+        : 'font-mono-code font-semibold text-amber-300';
+
+      checkPortMatch.textContent = analysis.portMatched ? '✔ Sesuai (TX↔RX)' : '✖ Tidak Cocok';
+      checkPortMatch.className = analysis.portMatched
+        ? 'font-mono-code font-semibold text-emerald-400'
+        : 'font-mono-code font-semibold text-rose-400';
+
+      // Urutan nyala remote tester
+      const seqString = analysis.remoteOrder.map(n => (n === 0 ? 'X' : n)).join('-');
+      document.getElementById('ledSequenceDisplay').textContent = seqString;
+      document.getElementById('remoteSeqHint').textContent = analysis.isCrossoverWiring ? 'CROSS' : (analysis.isStraightWiring ? '1..8' : 'ERR');
+
+      if (analysis.linkUp) {
+        card.className = 'rounded-2xl p-3.5 border transition-all bg-emerald-950/30 border-emerald-500/40 space-y-2.5';
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-mono-code font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        badge.textContent = 'PASS • LINK UP';
+        title.className = 'text-sm font-bold text-emerald-300';
+        title.textContent = 'Kabel & Perangkat Layak Terhubung!';
+        desc.textContent = `Susunan kabel ${analysis.detectedCableType} cocok untuk menghubungkan ${devicePair.devA.name} ke ${devicePair.devB.name}. Sinyal TX dari satu sisi tepat masuk ke pin RX sisi lawan.`;
+
+        headerStatus.className = 'flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono-code text-emerald-300';
+        headerStatus.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span>LINK UP • 100BASE-TX READY</span>`;
+
+        txLineTop.setAttribute('stroke', '#0284c7');
+        txLineBottom.setAttribute('stroke', '#059669');
+        txStatusText.className = 'font-mono-code text-emerald-400';
+        txStatusText.textContent = 'Link Aktif: Klik "Kirim Paket Data"';
+      } else {
+        card.className = 'rounded-2xl p-3.5 border transition-all bg-rose-950/30 border-rose-500/40 space-y-2.5';
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-mono-code font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        badge.textContent = 'FAIL • LINK DOWN';
+        title.className = 'text-sm font-bold text-rose-300';
+
+        if (!analysis.isAllConnected) {
+          title.textContent = 'Gagal: Kabel Putus / Pin Tidak Terhubung!';
+          desc.textContent = 'Terdapat jalur kabel yang terputus (Open) sehingga indikator LED pada Remote Tester tidak menyala lengkap 1 sampai 8. Periksa kembali proses crimping RJ-45.';
+        } else if (!analysis.isStraightWiring && !analysis.isCrossoverWiring) {
+          title.textContent = 'Gagal: Urutan Warna Pin Salah (Miswire)!';
+          desc.textContent = 'Urutan nyala lampu LED pada Remote Tester tidak mengikuti pola Straight (1-2-3-4-5-6-7-8) maupun Crossover (3-6-1-4-5-2-7-8).';
+        } else {
+          title.textContent = 'Gagal: Jenis Kabel Tidak Sesuai Perangkat!';
+          desc.textContent = `Anda menggunakan kabel ${analysis.detectedCableType}, padahal koneksi ${devicePair.devA.name} ke ${devicePair.devB.name} membutuhkan kabel ${devicePair.requiredLabel}. Pin TX bertemu TX sehingga terjadi tabrakan sinyal!`;
+        }
+
+        headerStatus.className = 'flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs font-mono-code text-rose-300';
+        headerStatus.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span>LINK DOWN • NO CARRIER</span>`;
+
+        txLineTop.setAttribute('stroke', '#e11d48');
+        txLineBottom.setAttribute('stroke', '#e11d48');
+        txStatusText.className = 'font-mono-code text-rose-400';
+        txStatusText.textContent = 'Link Putus: Jalur TX/RX tidak sinkron';
+      }
+    }
+
+    // ==================== SIMULATOR ALAT FISIK LAN TESTER ====================
+    function buildLanTesterLeds() {
+      const masterContainer = document.getElementById('masterLeds');
+      const remoteContainer = document.getElementById('remoteLeds');
+      masterContainer.innerHTML = '';
+      remoteContainer.innerHTML = '';
+
+      for (let i = 1; i <= 8; i++) {
+        masterContainer.innerHTML += `
+          <div class="flex items-center justify-between px-2 py-0.5 rounded bg-slate-950/70">
+            <span class="font-mono-code text-[11px] font-bold text-slate-300">${i}</span>
+            <span id="m-led-${i}" class="w-3.5 h-3.5 rounded-full led-off transition-all duration-150"></span>
+          </div>
+        `;
+        remoteContainer.innerHTML += `
+          <div class="flex items-center justify-between px-2 py-0.5 rounded bg-slate-950/70">
+            <span id="r-led-${i}" class="w-3.5 h-3.5 rounded-full led-off transition-all duration-150"></span>
+            <span class="font-mono-code text-[11px] font-bold text-slate-300">${i}</span>
+          </div>
+        `;
+      }
+    }
+
+    function clearAllTesterLeds() {
+      for (let i = 1; i <= 8; i++) {
+        document.getElementById(`m-led-${i}`).className = 'w-3.5 h-3.5 rounded-full led-off transition-all duration-150';
+        document.getElementById(`r-led-${i}`).className = 'w-3.5 h-3.5 rounded-full led-off transition-all duration-150';
+      }
+    }
+
+    function startLanTesterSequence(singleCycle = false) {
+      if (testerInterval) {
+        clearInterval(testerInterval);
+        testerInterval = null;
+      }
+
+      const stdAKey = document.getElementById('endASelect').value;
+      const stdBKey = document.getElementById('endBSelect').value;
+      const pairKey = document.getElementById('devicePairSelect').value;
+      const analysis = analyzeCableAndLink(STANDARDS[stdAKey], STANDARDS[stdBKey], DEVICE_CONFIGS[pairKey]);
+
+      const badge = document.getElementById('testerRunningBadge');
+      badge.textContent = 'SCANNING...';
+      badge.className = 'text-[10px] font-mono-code px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+
+      let step = 0; // 0..7
+      let cycles = 0;
+      const maxCycles = singleCycle ? 1 : 2;
+
+      const runStep = () => {
+        clearAllTesterLeds();
+        const masterPin = step + 1;
+        const remotePin = analysis.remoteOrder[step];
+
+        // Nyalakan LED Master
+        const mLed = document.getElementById(`m-led-${masterPin}`);
+        mLed.className = 'w-3.5 h-3.5 rounded-full led-on-green transition-all duration-150';
+
+        // Nyalakan LED Remote sesuai pemetaan fisik kabel
+        if (remotePin >= 1 && remotePin <= 8) {
+          const rLed = document.getElementById(`r-led-${remotePin}`);
+          const isNormalPin = (masterPin === remotePin) || (analysis.isCrossoverWiring && [1, 2, 3, 6].includes(masterPin));
+          rLed.className = isNormalPin
+            ? 'w-3.5 h-3.5 rounded-full led-on-green transition-all duration-150'
+            : 'w-3.5 h-3.5 rounded-full led-on-amber transition-all duration-150';
+        }
+
+        step++;
+        if (step >= 8) {
+          step = 0;
+          cycles++;
+          if (cycles >= maxCycles) {
+            clearInterval(testerInterval);
+            testerInterval = null;
+            setTimeout(() => {
+              clearAllTesterLeds();
+              badge.textContent = 'STANDBY';
+              badge.className = 'text-[10px] font-mono-code px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+            }, 400);
+          }
+        }
+      };
+
+      runStep();
+      testerInterval = setInterval(runStep, 340);
+    }
+
+    // ==================== ANIMASI TRANSMISI PAKET DATA (TX/RX) ====================
+    function animateSvgSprite(element, x1, y1, x2, y2, duration) {
+      return new Promise((resolve) => {
+        element.classList.remove('hidden');
+        const startTime = performance.now();
+
+        function frame(now) {
+          const t = Math.min((now - startTime) / duration, 1);
+          const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+          const cx = x1 + (x2 - x1) * ease;
+          const cy = y1 + (y2 - y1) * ease;
+          element.setAttribute('transform', `translate(${cx}, ${cy})`);
+
+          if (t < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            element.classList.add('hidden');
+            resolve();
+          }
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    async function triggerDataTransmission() {
+      if (isTransmitting) return;
+      isTransmitting = true;
+
+      const btn = document.getElementById('btnTransmitData');
+      btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      const stdAKey = document.getElementById('endASelect').value;
+      const stdBKey = document.getElementById('endBSelect').value;
+      const pairKey = document.getElementById('devicePairSelect').value;
+      const analysis = analyzeCableAndLink(STANDARDS[stdAKey], STANDARDS[stdBKey], DEVICE_CONFIGS[pairKey]);
+
+      const packetAtoB = document.getElementById('packetAtoB');
+      const packetBtoA = document.getElementById('packetBtoA');
+      const collisionBurst = document.getElementById('collisionBurst');
+      const txStatusText = document.getElementById('transmissionStatusText');
+
+      collisionBurst.classList.add('hidden');
+
+      if (analysis.linkUp) {
+        // Skenario Sukses: Paket A -> B lalu Balasan B -> A
+        txStatusText.className = 'font-mono-code text-cyan-300';
+        txStatusText.textContent = 'Mengirim Frame TX dari Perangkat A ke Perangkat B...';
+        await animateSvgSprite(packetAtoB, 135, 44, 545, 44, 850);
+
+        txStatusText.className = 'font-mono-code text-emerald-300';
+        txStatusText.textContent = 'Perangkat B menerima pada pin RX & mengirim balasan ACK...';
+        await animateSvgSprite(packetBtoA, 545, 84, 135, 84, 850);
+
+        txStatusText.className = 'font-mono-code text-emerald-400';
+        txStatusText.textContent = 'Transmisi Sukses! (0% Packet Loss)';
+      } else {
+        // Skenario Gagal: Sinyal bertabrakan di tengah (Collision / Packet Drop)
+        txStatusText.className = 'font-mono-code text-rose-400';
+        txStatusText.textContent = 'Mengirim sinyal... Terjadi tabrakan TX/RX atau jalur terputus!';
+
+        await Promise.all([
+          animateSvgSprite(packetAtoB, 135, 44, 330, 58, 650),
+          animateSvgSprite(packetBtoA, 545, 84, 350, 70, 650)
+        ]);
+
+        collisionBurst.classList.remove('hidden');
+        await new Promise(r => setTimeout(r, 1100));
+        collisionBurst.classList.add('hidden');
+
+        txStatusText.textContent = 'Packet Dropped! Periksa kecocokan kabel & perangkat.';
+      }
+
+      btn.classList.remove('opacity-70', 'cursor-not-allowed');
+      isTransmitting = false;
+    }
+  </script>
+</body>
+</html>
